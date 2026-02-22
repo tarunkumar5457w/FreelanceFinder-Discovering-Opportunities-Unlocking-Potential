@@ -1,0 +1,140 @@
+{
+  "name": "sb-works-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.0",
+    "cors": "^2.8.5"
+  }
+}
+
+
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import bidRoutes from "./routes/bidRoutes.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://127.0.0.1:27017/sbworks")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
+
+app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/bids", bidRoutes);
+
+app.listen(5000, () => console.log("Server running on port 5000"));
+
+
+
+
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+  role: {
+    type: String,
+    enum: ["client", "freelancer", "admin"]
+  }
+});
+
+export default mongoose.model("User", userSchema);
+
+
+import mongoose from "mongoose";
+
+const projectSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  budget: Number,
+  clientId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
+});
+
+export default mongoose.model("Project", projectSchema);
+
+
+import mongoose from "mongoose";
+
+const bidSchema = new mongoose.Schema({
+  projectId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project"
+  },
+  freelancerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  proposal: String,
+  amount: Number
+});
+
+export default mongoose.model("Bid", bidSchema);  
+
+
+import express from "express";
+import User from "../models/User.js";
+
+const router = express.Router();
+
+router.post("/register", async (req, res) => {
+  const user = await User.create(req.body);
+  res.json(user);
+});
+
+router.get("/", async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+});
+
+export default router;
+
+import express from "express";
+import Project from "../models/Project.js";
+
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+  const project = await Project.create(req.body);
+  res.json(project);
+});
+
+router.get("/", async (req, res) => {
+  const projects = await Project.find();
+  res.json(projects);
+});
+
+export default router;
+
+
+import express from "express";
+import Bid from "../models/Bid.js";
+
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+  const bid = await Bid.create(req.body);
+  res.json(bid);
+});
+
+router.get("/", async (req, res) => {
+  const bids = await Bid.find();
+  res.json(bids);
+});
+
+export default router;
