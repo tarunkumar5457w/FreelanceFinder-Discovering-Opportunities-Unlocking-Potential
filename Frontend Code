@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SB Works</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>SB Works - FreelanceFinder</h1>
+
+<h2>Post Project</h2>
+<input type="text" id="title" placeholder="Project Title">
+<input type="text" id="description" placeholder="Description">
+<input type="number" id="budget" placeholder="Budget">
+<button onclick="postProject()">Post</button>
+
+<h2>All Projects</h2>
+<ul id="projectList"></ul>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
+
+
+
+const API = "http://localhost:5000/api/projects";
+
+async function postProject() {
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const budget = document.getElementById("budget").value;
+
+  await axios.post(API, { title, description, budget });
+  loadProjects();
+}
+
+async function loadProjects() {
+  const res = await axios.get(API);
+  const list = document.getElementById("projectList");
+  list.innerHTML = "";
+
+  res.data.forEach(project => {
+    const li = document.createElement("li");
+    li.innerText = `${project.title} - ₹${project.budget}`;
+    list.appendChild(li);
+  });
+}
+
+loadProjects();
+
+
+body {
+  font-family: Arial;
+  padding: 20px;
+}
+
+input {
+  margin: 5px;
+  padding: 5px;
+}
+
+button {
+  padding: 5px 10px;
+  background-color: blue;
+  color: white;
+  border: none;
+}
