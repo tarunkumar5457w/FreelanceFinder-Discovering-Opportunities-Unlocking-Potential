@@ -1,1 +1,24 @@
 
+# SB Works Documentation
+
+## Architecture
+Client-Server Model
+
+Frontend:
+- HTML
+- CSS
+- Axios
+
+Backend:
+- Express.js
+
+Database:
+- MongoDB
+
+## Modules
+1. Client
+2. Freelancer
+3. Admin
+
+## Workflow
+Client → Post Project → Freelancer Bids → Client Selects → Work Submission → Review
